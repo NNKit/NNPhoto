@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'NNPhoto_Example' do
+  pod 'NNPhoto', :path => '../'
+
+  target 'NNPhoto_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
