@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="whP-gf-Uak">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dIQ-L4-fz9">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,12 +20,100 @@
                     <view key="view" contentMode="scaleToFill" id="TpU-gO-2f1">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="1lg-yi-ntt">
+                                <rect key="frame" x="30" y="100" width="315" height="467"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="AwH-dM-gF4">
+                                        <rect key="frame" x="0.0" y="0.0" width="101.5" height="467"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KzE-WX-Zd4">
+                                                <rect key="frame" x="0.0" y="0.0" width="101.5" height="152.5"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hvT-Fu-lA3">
+                                                <rect key="frame" x="0.0" y="157.5" width="101.5" height="152"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="VdW-m6-gmr">
+                                                <rect key="frame" x="0.0" y="314.5" width="101.5" height="152.5"/>
+                                            </imageView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="hvT-Fu-lA3" firstAttribute="centerY" secondItem="AwH-dM-gF4" secondAttribute="centerY" id="nBR-TD-Wpb"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="T3C-C0-L7Y">
+                                        <rect key="frame" x="106.5" y="0.0" width="102" height="467"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sHB-aQ-2XP">
+                                                <rect key="frame" x="0.0" y="0.0" width="102" height="152.5"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MT3-GM-ViV">
+                                                <rect key="frame" x="0.0" y="157.5" width="102" height="152"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="EbV-7p-TFq">
+                                                <rect key="frame" x="0.0" y="314.5" width="102" height="152.5"/>
+                                            </imageView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="MT3-GM-ViV" firstAttribute="centerY" secondItem="T3C-C0-L7Y" secondAttribute="centerY" id="aQ5-z7-fDK"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="fK6-P6-ynZ">
+                                        <rect key="frame" x="213.5" y="0.0" width="101.5" height="467"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mUN-Sr-ocd">
+                                                <rect key="frame" x="0.0" y="0.0" width="101.5" height="152.5"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="s0k-At-JjB">
+                                                <rect key="frame" x="0.0" y="157.5" width="101.5" height="152"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ux3-5C-g2l">
+                                                <rect key="frame" x="0.0" y="314.5" width="101.5" height="152.5"/>
+                                            </imageView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="s0k-At-JjB" firstAttribute="centerY" secondItem="fK6-P6-ynZ" secondAttribute="centerY" id="Q3e-ww-ZM1"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="1lg-yi-ntt" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leading" constant="30" id="53U-Wa-xLD"/>
+                            <constraint firstItem="Mvr-aV-6Um" firstAttribute="top" secondItem="1lg-yi-ntt" secondAttribute="bottom" constant="100" id="NeR-GH-Nnx"/>
+                            <constraint firstItem="1lg-yi-ntt" firstAttribute="top" secondItem="TpU-gO-2f1" secondAttribute="top" constant="100" id="fOk-cr-Aug"/>
+                            <constraint firstAttribute="trailing" secondItem="1lg-yi-ntt" secondAttribute="trailing" constant="30" id="ulj-gR-qCS"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="6Ob-9w-o0k"/>
+                    <connections>
+                        <outlet property="centerStackView" destination="T3C-C0-L7Y" id="Bp4-vU-FFx"/>
+                        <outlet property="leftStackView" destination="AwH-dM-gF4" id="fX7-KQ-i4J"/>
+                        <outlet property="rightStackView" destination="fK6-P6-ynZ" id="7gk-iJ-xho"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tc2-Qw-aMS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="305" y="433"/>
+            <point key="canvasLocation" x="644" y="432.23388305847078"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="vqw-8R-tOF">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dIQ-L4-fz9" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="aAh-80-8Uq">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="whP-gf-Uak" kind="relationship" relationship="rootViewController" id="kPI-D4-iw4"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="65i-aP-SJr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-23" y="422"/>
         </scene>
     </scenes>
 </document>

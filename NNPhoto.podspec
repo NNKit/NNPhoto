@@ -10,28 +10,16 @@ Pod::Spec.new do |s|
   s.name             = 'NNPhoto'
   s.version          = '0.1.0'
   s.summary          = 'A short description of NNPhoto.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
-
   s.homepage         = 'https://github.com/ws00801526/NNPhoto'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'ws00801526' => '3057600441@qq.com' }
   s.source           = { :git => 'https://github.com/ws00801526/NNPhoto.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
-
   s.ios.deployment_target = '8.0'
+  s.subspec 'Browser' do |ss|
+    ss.source_files = 'Browser/Classes/**/*'
+    ss.dependency 'YYWebImage'
+  end
 
-  s.source_files = 'NNPhoto/Classes/**/*'
-  
   # s.resource_bundles = {
   #   'NNPhoto' => ['NNPhoto/Assets/*.png']
   # }
