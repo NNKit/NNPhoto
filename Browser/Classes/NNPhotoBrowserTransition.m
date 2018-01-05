@@ -46,6 +46,10 @@
         snapShotView.frame = [containerView convertRect:toVC.sourceView.frame fromView:toVC.sourceView.superview ? : fromVC.view];
         toVC.sourceView.hidden = YES;
         
+        NNPhotoModel *photo = [toVC.photos objectAtIndex:toVC.currentIndex];
+        [photo image];
+        const CGSize size = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:toVC.view.bounds.size];
+        
         //设置第二个控制器的位置、透明度
         toVC.view.frame = [transitionContext finalFrameForViewController:toVC];
         toVC.view.alpha = 0;
@@ -59,8 +63,6 @@
         [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
             [containerView layoutIfNeeded];
             toVC.view.alpha = 1.0;
-            NNPhotoModel *photo = [toVC.photos objectAtIndex:toVC.currentIndex];
-            CGSize size = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:toVC.view.bounds.size];
             snapShotView.frame = CGRectMake(0, 0, size.width, size.height);
             snapShotView.center = containerView.center;
             snapShotView.layer.cornerRadius = .0f;
