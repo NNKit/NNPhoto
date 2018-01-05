@@ -120,7 +120,7 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[collectionView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:@{@"collectionView" : self.collectionView}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[collectionView]-margin-|" options:NSLayoutFormatAlignAllLeft metrics:@{@"margin" : @(-16)} views:@{@"collectionView" : self.collectionView}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[collectionView]-margin-|" options:NSLayoutFormatAlignAllLeft metrics:@{@"margin" : @(-kNNPhotoBrowserPadding)} views:@{@"collectionView" : self.collectionView}]];
 }
 
 - (void)viewControllerBack {
