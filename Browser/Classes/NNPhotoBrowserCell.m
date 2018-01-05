@@ -101,10 +101,10 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
 - (void)layoutSubviewsAdaptToImageSize:(CGSize)imageSize animated:(BOOL)animated {
 
     const CGSize containerSize = CGSizeMake(self.bounds.size.width - kNNPhotoBrowserPadding, self.bounds.size.height);
-    const CGSize targetSize = [self adjustImageSize:imageSize toFittingTargetSize:containerSize];
-    
-//    const BOOL needUpdate = !CGSizeEqualToSize(targetSize, self.imageView.bounds.size);
-//    if (!needUpdate) return;
+    const CGSize targetSize = [NNPhotoModel adjustImageSize:imageSize toFittingTargetSize:containerSize];
+    const CGRect targetFrame = CGRectMake((self.bounds.size.width - kNNPhotoBrowserPadding - targetSize.width) * .5f, (self.bounds.size.height - targetSize.height) * .5f, targetSize.width, targetSize.height);
+    const BOOL needUpdate = !CGRectEqualToRect(targetFrame, self.containerView.frame);
+    if (!needUpdate) return;
 
     const CGFloat maxWidth = MAX(self.bounds.size.width - kNNPhotoBrowserPadding, targetSize.width);
     const CGFloat maxHeight = MAX(self.bounds.size.height, targetSize.height);
@@ -115,36 +115,9 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
     self.scrollView.maximumZoomScale = MAX(kNNPhotoBrowserMaxZoomScale, MAX((maxWidth / targetSize.width), (maxHeight / targetSize.height)));
 
     if (animated) [UIView beginAnimations:@"layoutSubviews" context:nil];
-    self.containerView.frame = CGRectMake((self.bounds.size.width - kNNPhotoBrowserPadding - targetSize.width) * .5f, (self.bounds.size.height - targetSize.height) * .5f, targetSize.width, targetSize.height);
+    self.containerView.frame = targetFrame;
     self.imageView.frame = self.containerView.bounds;
     if (animated) [UIView commitAnimations];
-}
-
-- (CGSize)adjustImageSize:(CGSize)imageSize toFittingTargetSize:(CGSize)targetSize {
-    
-    CGSize result = imageSize;
-    const CGFloat wPercent = imageSize.width / targetSize.width;
-    const CGFloat hPercent = imageSize.height / targetSize.height;
-    if (wPercent > 1.f && hPercent > 1.f) {
-        if (wPercent > hPercent) {
-            // 处理图片宽度 > 屏幕高度情况, 宽度撑满, 高度等比适应
-            result.width = targetSize.width;
-            result.height = targetSize.width * imageSize.height / imageSize.width;
-        } else {
-            // 处理图片高度 > 屏幕高度情况, 高度撑满, 宽度等比适应
-            result.width = targetSize.height * imageSize.width / imageSize.height;
-            result.height = targetSize.height;
-        }
-    } else if (wPercent > 1.f && hPercent < 1.f) {
-        // 处理图片宽度 > 屏幕高度情况, 宽度撑满, 高度等比适应
-        result.width = targetSize.width;
-        result.height = targetSize.width * imageSize.height / imageSize.width;
-    } else if (wPercent < 1.f && hPercent > 1.f) {
-        // 处理图片高度 > 屏幕高度情况, 高度撑满, 宽度等比适应
-        result.width = targetSize.height * imageSize.width / imageSize.height;
-        result.height = targetSize.height;
-    }
-    return result;
 }
 
 #pragma mark - IBEvents
