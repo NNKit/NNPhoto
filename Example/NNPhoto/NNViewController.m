@@ -72,6 +72,7 @@
         [photos addObject:photo];
     }];
     NNPhotoBrowserController *browserC = [[NNPhotoBrowserController alloc] initWithPhotos:photos];
+    browserC.sourceView = arc4random() % 2 ? tap.view : nil;
     browserC.currentIndex = tap.view.tag;
     [self presentViewController:browserC animated:YES completion:nil];
 //    [self.navigationController pushViewController:browserC animated:YES];
