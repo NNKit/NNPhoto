@@ -10,6 +10,7 @@
 CGFloat kNNPhotoBrowserPadding = 16.f;
 
 #import "NNPhotoBrowserController.h"
+#import "NNPhotoBrowserTransition.h"
 #import "NNPhotoBrowserCell.h"
 
 #import <YYWebImage/YYWebImage.h>
@@ -87,6 +88,7 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 
 - (void)setupUI {
 
+    self.transitioningDelegate = (id<UIViewControllerTransitioningDelegate>)self;
     self.view.backgroundColor = [UIColor blackColor];
     // 关闭contentInsets自动计算, 解决图片无法全屏显示问题
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -135,6 +137,16 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     self.currentIndex = ceil(scrollView.contentOffset.x / scrollView.frame.size.width);
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (nullable id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    return [[NNPhotoBrowserPresentTransition alloc] init];
+}
+
+- (nullable id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return [[NNPhotoBrowserDismissTransition alloc] init];
 }
 
 #pragma mark - UICollectionViewDelegate & UICollectionViewDataSource
