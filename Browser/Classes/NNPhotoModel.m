@@ -12,6 +12,8 @@
 #import <YYWebImage/YYWebImage.h>
 
 @implementation NNPhotoModel
+@synthesize image = _image;
+@synthesize originImage = _originImage;
 
 #pragma mark - Life Cycle
 
@@ -43,15 +45,35 @@
     return _size;
 }
 
+- (UIImage *)image {
+    
+    if (_image) return _image;
+    if (!self.imagePath.length) return nil;
+    if ([self.imagePath hasPrefix:@"http"]) {
+        NSString *cacheKey = [[YYWebImageManager sharedManager] cacheKeyForURL:[NSURL URLWithString:self.imagePath]];
+        _image = [[YYWebImageManager sharedManager].cache getImageForKey:cacheKey];
+    } else {
+        _image = [UIImage imageWithContentsOfFile:self.imagePath];
+    }
+    return _image;
+}
+
+- (UIImage *)originImage {
+    
+    if (_originImage) return _originImage;
+    if (!self.originImagePath.length) return nil;
+    if ([self.originImagePath hasPrefix:@"http"]) {
+        NSString *cacheKey = [[YYWebImageManager sharedManager] cacheKeyForURL:[NSURL URLWithString:self.originImagePath]];
+        _originImage = [[YYWebImageManager sharedManager].cache getImageForKey:cacheKey];
+    } else {
+        _originImage = [UIImage imageWithContentsOfFile:self.originImagePath];
+    }
+    return _originImage;
+}
+
 - (BOOL)isOriginDownloaded {
     
-    if (self.originImagePath.length) {
-        if ([self.originImagePath hasPrefix:@"http"]) {
-            NSString *cacheKey = [[YYWebImageManager sharedManager] cacheKeyForURL:[NSURL URLWithString:self.originImagePath]];
-            return [[YYWebImageManager sharedManager].cache containsImageForKey:cacheKey];
-        }
-    }
-    return NO;
+    return self.originImage != nil;
 }
 
 #pragma mark - Class
