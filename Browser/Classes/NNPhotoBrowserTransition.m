@@ -20,7 +20,6 @@
 
 @implementation NNPhotoBrowserPresentTransition
 
-
 - (NSTimeInterval)transitionDuration:(id <UIViewControllerContextTransitioning>)transitionContext{
     return .4f;
 }
@@ -32,71 +31,27 @@
     NNPhotoBrowserController *toVC   = (NNPhotoBrowserController *)[transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     UIView *containerView = [transitionContext containerView];
     
-    if (toVC.sourceView) {
-        
-        /** 判断sourceview 是否设置了 */
-        UIView * snapShotView;
-        if ([toVC.sourceView isKindOfClass:[UIImageView class]]) {
-            snapShotView = [[UIImageView alloc] initWithImage:[(UIImageView *)toVC.sourceView image]];
-        } else {
-            snapShotView = [toVC.sourceView snapshotViewAfterScreenUpdates:YES];
-        }
-        snapShotView.clipsToBounds = YES;
-        snapShotView.contentMode = UIViewContentModeScaleAspectFill;
-        snapShotView.frame = [containerView convertRect:toVC.sourceView.frame fromView:toVC.sourceView.superview ? : fromVC.view];
-        toVC.sourceView.hidden = YES;
-        
-        NNPhotoModel *photo = [toVC.photos objectAtIndex:toVC.currentIndex];
-        [photo image];
-        const CGSize size = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:toVC.view.bounds.size];
-        
-        //设置第二个控制器的位置、透明度
-        toVC.view.frame = [transitionContext finalFrameForViewController:toVC];
-        toVC.view.alpha = 0;
-        toVC.collectionView.hidden = YES;
-
-        //把动画前后的两个ViewController加到容器中,顺序很重要,snapShotView在上方
-        [containerView addSubview:toVC.view];
-        [containerView addSubview:snapShotView];
-        
-        //动起来。第二个控制器的透明度0~1；让截图SnapShotView的位置更新到最新；
-        [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-            [containerView layoutIfNeeded];
-            toVC.view.alpha = 1.0;
-            snapShotView.frame = CGRectMake(0, 0, size.width, size.height);
-            snapShotView.center = containerView.center;
-            snapShotView.layer.cornerRadius = .0f;
-        } completion:^(BOOL finished) {
-            [self handlePresentTranistionCompletionWithContainerView:containerView
-                                                        snapshotView:snapShotView
-                                                                toVC:toVC
-                                                   transitionContext:transitionContext];
-        }];
-    } else {
-        /** sourceview 未设置 ,使用另外种转场方式 */
-        [self normalPresentTranistionWithContext:transitionContext];
-    }
-}
-
-
-- (void)normalPresentTranistionWithContext:(id <UIViewControllerContextTransitioning>)transitionContext {
-    
-    //获取两个VC 和 动画发生的容器
-    NNPhotoBrowserController *toVC   = (NNPhotoBrowserController *)[transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    UIView *containerView = [transitionContext containerView];
-    
-    /** 创建一个snapShotView  */
-    UIImageView *snapShotView = [[UIImageView alloc] init];
-    snapShotView.contentMode = UIViewContentModeScaleAspectFill;
-    snapShotView.layer.masksToBounds = YES;
     NNPhotoModel *photo = [toVC.photos objectAtIndex:toVC.currentIndex];
-    snapShotView.image =   photo.image ? : photo.thumbnail;
-
-    CGSize size = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:toVC.view.bounds.size];
-    snapShotView.frame = CGRectMake(0, 0, size.width, size.height);
-    snapShotView.center = containerView.center;
-    snapShotView.transform = CGAffineTransformMakeScale(.1f, .1f);
-
+    [photo image];
+    const CGSize size = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:toVC.view.bounds.size];
+    
+    UIView *snapshotView;
+    if (toVC.sourceView) {
+        if ([toVC.sourceView isKindOfClass:[UIImageView class]]) {
+            snapshotView = [[UIImageView alloc] initWithImage:[(UIImageView *)toVC.sourceView image]];
+        } else {
+            snapshotView = [toVC.sourceView snapshotViewAfterScreenUpdates:YES];
+        }
+        snapshotView.frame = [containerView convertRect:toVC.sourceView.frame fromView:toVC.sourceView.superview ? : fromVC.view];
+    } else {
+        snapshotView = [[UIImageView alloc] initWithImage:photo.image ? : photo.thumbnail];
+        snapshotView.frame = CGRectMake(0, 0, size.width, size.height);
+        snapshotView.center = containerView.center;
+        snapshotView.transform = CGAffineTransformMakeScale(.1f, .1f);
+    }
+    snapshotView.clipsToBounds = YES;
+    snapshotView.contentMode = UIViewContentModeScaleAspectFill;
+    
     //设置第二个控制器的位置、透明度
     toVC.view.frame = [transitionContext finalFrameForViewController:toVC];
     toVC.view.alpha = 0;
@@ -104,20 +59,26 @@
     
     //把动画前后的两个ViewController加到容器中,顺序很重要,snapShotView在上方
     [containerView addSubview:toVC.view];
-    [containerView addSubview:snapShotView];
+    [containerView addSubview:snapshotView];
     
     //动起来。第二个控制器的透明度0~1；让截图SnapShotView的位置更新到最新；
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0f usingSpringWithDamping:0.8f initialSpringVelocity:1.0f options:UIViewAnimationOptionCurveLinear animations:^{
-  
-        [containerView layoutIfNeeded];
-        toVC.view.alpha = 1.0;
-        snapShotView.transform = CGAffineTransformIdentity;
-    } completion:^(BOOL finished) {
-        [self handlePresentTranistionCompletionWithContainerView:containerView
-                                                    snapshotView:snapShotView
-                                                            toVC:toVC
-                                               transitionContext:transitionContext];
-    }];
+    [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                          delay:CGFLOAT_MIN
+         usingSpringWithDamping:.8f
+          initialSpringVelocity:1.f
+                        options:UIViewAnimationOptionCurveLinear
+                     animations:^{
+                         [containerView layoutIfNeeded];
+                         toVC.view.alpha = 1.0;
+                         snapshotView.frame = CGRectMake(0, 0, size.width, size.height);
+                         snapshotView.center = containerView.center;
+                         snapshotView.layer.cornerRadius = .0f;
+                     } completion:^(BOOL finished) {
+                         [self handlePresentTranistionCompletionWithContainerView:containerView
+                                                                     snapshotView:snapshotView
+                                                                             toVC:toVC
+                                                                transitionContext:transitionContext];
+                     }];
 }
 
 /**
