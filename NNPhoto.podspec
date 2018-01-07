@@ -8,23 +8,15 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NNPhoto'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of NNPhoto.'
-  s.homepage         = 'https://github.com/ws00801526/NNPhoto'
+  s.version          = '0.0.1'
+  s.summary          = 'a photo browser and picker framework for iOS.'
+  s.homepage         = 'https://github.com/NNKit/NNPhoto'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'ws00801526' => '3057600441@qq.com' }
-  s.source           = { :git => 'https://github.com/ws00801526/NNPhoto.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/NNKit/NNPhoto.git', :tag => s.version.to_s }
   s.ios.deployment_target = '8.0'
   s.subspec 'Browser' do |ss|
     ss.source_files = 'Browser/Classes/**/*'
     ss.dependency 'YYWebImage'
   end
-
-  # s.resource_bundles = {
-  #   'NNPhoto' => ['NNPhoto/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end
