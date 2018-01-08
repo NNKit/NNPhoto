@@ -53,9 +53,16 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     [self setupUI];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    self.storedBarInfo = @{ @"hidden" : @(self.navigationController.isNavigationBarHidden) };
+    [self.navigationController setNavigationBarHidden:animated];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    if (self.storedBarInfo) {
+    if (self.storedBarInfo && !self.presentingViewController) {
         BOOL navigationBarHidden = [[self.storedBarInfo objectForKey:@"hidden"] boolValue];
         [self.navigationController setNavigationBarHidden:navigationBarHidden animated:animated];
     }
@@ -68,7 +75,6 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleLightContent;
 }
-
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     
@@ -84,11 +90,21 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     } completion:nil];
 }
 
+#pragma mark - Public
+
+- (void)showFromParentController:(__kindof UIViewController *)controller {
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self];
+    nav.transitioningDelegate = (id<UIViewControllerTransitioningDelegate>)self;
+    [controller presentViewController:nav animated:YES completion:nil];
+}
+
 #pragma mark - Private
 
 - (void)setupUI {
 
     self.transitioningDelegate = (id<UIViewControllerTransitioningDelegate>)self;
+    self.navigationController.transitioningDelegate = (id<UIViewControllerTransitioningDelegate>)self;
     self.view.backgroundColor = [UIColor blackColor];
     // 关闭contentInsets自动计算, 解决图片无法全屏显示问题
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -111,11 +127,6 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     if (self.firstBrowserIndex != NSNotFound && self.firstBrowserIndex < self.photos.count) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:self.firstBrowserIndex inSection:0];
         [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-    }
-    // push 方式进入, 记录进入前navigationBar.hidden
-    if (!self.presentingViewController && !self.navigationController.isNavigationBarHidden) {
-        self.storedBarInfo = @{ @"hidden" : @(self.navigationController.isNavigationBarHidden) };
-        [self.navigationController setNavigationBarHidden:YES];
     }
     
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;

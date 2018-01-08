@@ -28,21 +28,30 @@
     
     //获取两个VC 和 动画发生的容器
     UIViewController *fromVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    NNPhotoBrowserController *toVC   = (NNPhotoBrowserController *)[transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    NNPhotoBrowserController *browserVC = nil;
+    if ([toVC isKindOfClass:[NNPhotoBrowserController class]]) {
+        browserVC = (NNPhotoBrowserController *)toVC;
+    } else if ([toVC isKindOfClass:[UINavigationController class]]
+               && [[(UINavigationController *)toVC topViewController] isKindOfClass:[NNPhotoBrowserController class]]) {
+        browserVC = (NNPhotoBrowserController *)[(UINavigationController *)toVC topViewController];
+    }
+    if (!browserVC) return;
+    
     UIView *containerView = [transitionContext containerView];
     
-    NNPhotoModel *photo = [toVC.photos objectAtIndex:toVC.currentIndex];
+    NNPhotoModel *photo = [browserVC.photos objectAtIndex:browserVC.currentIndex];
     [photo image];
     const CGSize size = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:toVC.view.bounds.size];
     
     UIView *snapshotView;
-    if (toVC.sourceView) {
-        if ([toVC.sourceView isKindOfClass:[UIImageView class]]) {
-            snapshotView = [[UIImageView alloc] initWithImage:[(UIImageView *)toVC.sourceView image]];
+    if (browserVC.sourceView) {
+        if ([browserVC.sourceView isKindOfClass:[UIImageView class]]) {
+            snapshotView = [[UIImageView alloc] initWithImage:[(UIImageView *)browserVC.sourceView image]];
         } else {
-            snapshotView = [toVC.sourceView snapshotViewAfterScreenUpdates:YES];
+            snapshotView = [browserVC.sourceView snapshotViewAfterScreenUpdates:YES];
         }
-        snapshotView.frame = [containerView convertRect:toVC.sourceView.frame fromView:toVC.sourceView.superview ? : fromVC.view];
+        snapshotView.frame = [containerView convertRect:browserVC.sourceView.frame fromView:browserVC.sourceView.superview ? : fromVC.view];
     } else {
         snapshotView = [[UIImageView alloc] initWithImage:photo.image ? : photo.thumbnail];
         snapshotView.frame = CGRectMake(0, 0, size.width, size.height);
@@ -55,7 +64,7 @@
     //设置第二个控制器的位置、透明度
     toVC.view.frame = [transitionContext finalFrameForViewController:toVC];
     toVC.view.alpha = 0;
-    toVC.collectionView.hidden = YES;
+    browserVC.collectionView.hidden = YES;
     
     //把动画前后的两个ViewController加到容器中,顺序很重要,snapShotView在上方
     [containerView addSubview:toVC.view];
@@ -76,7 +85,7 @@
                      } completion:^(BOOL finished) {
                          [self handlePresentTranistionCompletionWithContainerView:containerView
                                                                      snapshotView:snapshotView
-                                                                             toVC:toVC
+                                                                             toVC:browserVC
                                                                 transitionContext:transitionContext];
                      }];
 }
@@ -114,27 +123,23 @@
 
 - (void)animateTransition:(id <UIViewControllerContextTransitioning>)transitionContext{
 
-    //获取两个VC 和 动画发生的容器
-    UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    NNPhotoBrowserController *fromVC   = (NNPhotoBrowserController *)[transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIViewController *toVC = nil; UIViewController *fromVC = nil; NNPhotoBrowserController *browserVC = nil;
+    [self paraseTransitionContext:transitionContext fromVC:&fromVC toVC:&toVC browserVC:&browserVC];
+    if (!browserVC) return;
     UIView *containerView = [transitionContext containerView];
     
-    if (fromVC.sourceView && (fromVC.currentIndex == fromVC.firstBrowserIndex)) {
-        /** 判断sourceview 是否设置了 */
-
-        /** 如果当前index == firstBrowserIndex 使用返回到之前页面的动画 */
-        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:fromVC.currentIndex inSection:0];
-        
-        NNPhotoBrowserCell *browserCell = (NNPhotoBrowserCell *)[fromVC.collectionView cellForItemAtIndexPath:indexPath];
-        
+    /** 如果当前index == firstBrowserIndex 使用返回到之前页面的动画 */
+    if (browserVC.sourceView && (browserVC.currentIndex == browserVC.firstBrowserIndex)) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:browserVC.currentIndex inSection:0];
+        NNPhotoBrowserCell *browserCell = (NNPhotoBrowserCell *)[browserVC.collectionView cellForItemAtIndexPath:indexPath];
         /** 配置动画view */
-        UIImageView *snapShotView = [[UIImageView alloc] initWithImage:browserCell.imageView.image];
-        snapShotView.contentMode = UIViewContentModeScaleAspectFill;
-        snapShotView.clipsToBounds = YES;
-        snapShotView.frame = [containerView convertRect:browserCell.imageView.frame fromView:browserCell.imageView.superview ? : fromVC.view];
+        UIImageView *snapshotView = [[UIImageView alloc] initWithImage:browserCell.imageView.image];
+        snapshotView.contentMode = UIViewContentModeScaleAspectFill;
+        snapshotView.clipsToBounds = YES;
+        snapshotView.frame = [containerView convertRect:browserCell.imageView.frame fromView:browserCell.imageView.superview ? : fromVC.view];
         
         /** 隐藏 返回的view */
-        fromVC.sourceView.hidden = YES;
+        browserVC.sourceView.hidden = YES;
         browserCell.hidden = YES;
 
         //设置第二个控制器的位置、透明度
@@ -142,18 +147,19 @@
         toVC.view.alpha = 0;
         
         [containerView addSubview:toVC.view];
-        [containerView addSubview:snapShotView];
+        [containerView addSubview:snapshotView];
         
+        const CGRect finallyFrame = [containerView convertRect:browserVC.sourceView.frame fromView:browserVC.sourceView.superview ? : toVC.view];
         [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
             
             [containerView layoutIfNeeded];
             toVC.view.alpha = 1.f;
-            snapShotView.frame = [containerView convertRect:fromVC.sourceView.frame fromView:fromVC.sourceView.superview ? : toVC.view];
+            fromVC.view.alpha = .0f;
+            snapshotView.frame = finallyFrame;
         } completion:^(BOOL finished) {
             
-            fromVC.sourceView.hidden = NO;
-            [snapShotView removeFromSuperview];
-            //告诉系统动画结束
+            browserVC.sourceView.hidden = NO;
+            [snapshotView removeFromSuperview];
             [transitionContext completeTransition:!transitionContext.transitionWasCancelled];
         }];
     } else {
@@ -165,18 +171,17 @@
 - (void)normalDismissTranistionWithContext:(id <UIViewControllerContextTransitioning>)transitionContext {
     
     //获取两个VC 和 动画发生的容器
-    UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    NNPhotoBrowserController *fromVC   = (NNPhotoBrowserController *)[transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIViewController *toVC = nil; UIViewController *fromVC = nil; NNPhotoBrowserController *browserVC = nil;
+    [self paraseTransitionContext:transitionContext fromVC:&fromVC toVC:&toVC browserVC:&browserVC];
+    if (!browserVC) return;
     UIView *containerView = [transitionContext containerView];
-    /** 如果当前index == firstBrowserIndex 使用返回到之前页面的动画 */
-    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:fromVC.currentIndex inSection:0];
-    
-    NNPhotoBrowserCell *browserCell = (NNPhotoBrowserCell *)[fromVC.collectionView cellForItemAtIndexPath:indexPath];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:browserVC.currentIndex inSection:0];
+    NNPhotoBrowserCell *browserCell = (NNPhotoBrowserCell *)[browserVC.collectionView cellForItemAtIndexPath:indexPath];
     
     UIImageView *snapShotView = [[UIImageView alloc] initWithImage:browserCell.imageView.image];
     snapShotView.clipsToBounds = YES;
     snapShotView.contentMode = UIViewContentModeScaleAspectFill;
-    snapShotView.frame = [containerView convertRect:browserCell.imageView.frame fromView:browserCell.imageView.superview ? : fromVC.view];
+    snapShotView.frame = [containerView convertRect:browserCell.imageView.frame fromView:browserCell.imageView.superview ? : browserVC.view];
     
     //设置第二个控制器的位置、透明度
     toVC.view.frame = [transitionContext finalFrameForViewController:toVC];
@@ -193,11 +198,25 @@
         snapShotView.transform = CGAffineTransformMakeScale(1.3, 1.3);
     } completion:^(BOOL finished) {
         
+        browserVC.sourceView.hidden = NO;
         [snapShotView removeFromSuperview];
-        //告诉系统动画结束
         [transitionContext completeTransition:!transitionContext.transitionWasCancelled];
     }];
 }
 
+- (void)paraseTransitionContext:(id<UIViewControllerContextTransitioning>)transitionContext
+                         fromVC:(inout __kindof UIViewController **)fromVC
+                           toVC:(inout __kindof UIViewController **)toVC
+                      browserVC:(inout UIViewController **)browserVC {
+    
+    *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+    *fromVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    if ([*fromVC isKindOfClass:[NNPhotoBrowserController class]]) {
+        *browserVC = (NNPhotoBrowserController *)*fromVC;
+    } else if ([*fromVC isKindOfClass:[UINavigationController class]]
+               && [[(UINavigationController *)*fromVC topViewController] isKindOfClass:[NNPhotoBrowserController class]]) {
+        *browserVC = (NNPhotoBrowserController *)[(UINavigationController *)*fromVC topViewController];
+    }
+}
 
 @end
