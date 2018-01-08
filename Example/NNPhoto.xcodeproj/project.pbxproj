@@ -22,6 +22,7 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		97CE28802003630D00AD1E5A /* NNLoadingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97CE287F2003630D00AD1E5A /* NNLoadingViewController.m */; };
 		98ED6716A0E7C2DCF7A9F46F /* Pods_NNPhoto_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B189D799D1350532EF23A77F /* Pods_NNPhoto_Example.framework */; };
 		C7119B0EA79EC4C0657EA0A0 /* Pods_NNPhoto_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F22CC9163E8CBC19471620CB /* Pods_NNPhoto_Tests.framework */; };
 /* End PBXBuildFile section */
@@ -63,6 +64,8 @@
 		7EB1610FFD12C95B699BCB9C /* NNPhoto.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = NNPhoto.podspec; path = ../NNPhoto.podspec; sourceTree = "<group>"; };
 		7FA126F7B0D22AD671D74A8F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		97CE287E2003630D00AD1E5A /* NNLoadingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NNLoadingViewController.h; sourceTree = "<group>"; };
+		97CE287F2003630D00AD1E5A /* NNLoadingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NNLoadingViewController.m; sourceTree = "<group>"; };
 		A167DD6B2FE4ED77F90A75CC /* Pods-NNPhoto_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NNPhoto_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NNPhoto_Tests/Pods-NNPhoto_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		AEFE721EF067A859B0E4255E /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		B189D799D1350532EF23A77F /* Pods_NNPhoto_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NNPhoto_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -137,6 +140,8 @@
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
 				6003F5A5195388D20070C39A /* NNViewController.h */,
 				6003F5A6195388D20070C39A /* NNViewController.m */,
+				97CE287E2003630D00AD1E5A /* NNLoadingViewController.h */,
+				97CE287F2003630D00AD1E5A /* NNLoadingViewController.m */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -413,6 +418,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F59E195388D20070C39A /* NNAppDelegate.m in Sources */,
+				97CE28802003630D00AD1E5A /* NNLoadingViewController.m in Sources */,
 				6003F5A7195388D20070C39A /* NNViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 			);

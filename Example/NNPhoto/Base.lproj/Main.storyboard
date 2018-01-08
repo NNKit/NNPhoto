@@ -77,12 +77,21 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hCX-6O-qel">
+                                <rect key="frame" x="164" y="617" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="testLoadingView:" destination="whP-gf-Uak" eventType="touchUpInside" id="jVE-ZP-9Xe"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="hCX-6O-qel" firstAttribute="centerX" secondItem="TpU-gO-2f1" secondAttribute="centerX" id="37H-xR-cPM"/>
                             <constraint firstItem="1lg-yi-ntt" firstAttribute="leading" secondItem="TpU-gO-2f1" secondAttribute="leading" constant="30" id="53U-Wa-xLD"/>
                             <constraint firstItem="Mvr-aV-6Um" firstAttribute="top" secondItem="1lg-yi-ntt" secondAttribute="bottom" constant="100" id="NeR-GH-Nnx"/>
                             <constraint firstItem="1lg-yi-ntt" firstAttribute="top" secondItem="TpU-gO-2f1" secondAttribute="top" constant="100" id="fOk-cr-Aug"/>
+                            <constraint firstItem="Mvr-aV-6Um" firstAttribute="top" secondItem="hCX-6O-qel" secondAttribute="bottom" constant="20" id="nBa-GY-DG7"/>
                             <constraint firstAttribute="trailing" secondItem="1lg-yi-ntt" secondAttribute="trailing" constant="30" id="ulj-gR-qCS"/>
                         </constraints>
                     </view>

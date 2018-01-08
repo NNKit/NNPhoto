@@ -7,6 +7,7 @@
 //
 
 #import "NNViewController.h"
+#import "NNLoadingViewController.h"
 #import <NNPhoto/NNPhotoBrowser.h>
 
 @interface NNViewController ()
@@ -36,8 +37,6 @@
                         @"http://e.hiphotos.baidu.com/image/pic/item/54fbb2fb43166d22db56ba704c2309f79052d235.jpg"
                         ];
 }
-
-
 
 #pragma mark - Private
 
@@ -78,6 +77,13 @@
 
 //    [self.navigationController presentViewController:browserC animated:YES completion:nil];
 //    [self.navigationController pushViewController:browserC animated:YES];
+}
+- (IBAction)testLoadingView:(UIButton *)sender {
+    
+    [[YYWebImageManager sharedManager].cache.diskCache removeAllObjects];
+    [[YYWebImageManager sharedManager].cache.memoryCache removeAllObjects];
+    NNLoadingViewController *loadingVC = [[NNLoadingViewController alloc] init];
+    [self.navigationController pushViewController:loadingVC animated:YES];
 }
 
 @end
