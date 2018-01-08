@@ -153,22 +153,24 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
 
 - (void)configCellWithItem:(NNPhotoModel *)item displayOriginal:(BOOL)original {
     
-    __weak typeof(self) wSelf = self;
     NSString *imagePath = item.imagePath;
     if ((original && item.originImagePath.length) || item.isOriginDownloaded) imagePath = item.originImagePath;
     
     __weak typeof(item) wItem = item;
+    __weak typeof(self) wSelf = self;
     [self layoutSubviewsAdaptToImageSize:item.size];
     [self.imageView nn_setImageWithPath:imagePath
                             placeholder:item.thumbnail
                                progress:nil
                              completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
                                  __strong typeof(wSelf) self = wSelf;
+                                 BOOL animated = NO;
                                  if (!error && image) {
+                                     animated = !CGSizeEqualToSize(wItem.size, image.size);
                                      wItem.size = image.size;
                                      self.imageView.image = image;
                                  }
-                                 [self layoutSubviewsAdaptToImageSize:wItem.size animated:(!error && image)];
+                                 [self layoutSubviewsAdaptToImageSize:wItem.size animated:animated];
                              }];
 }
 
