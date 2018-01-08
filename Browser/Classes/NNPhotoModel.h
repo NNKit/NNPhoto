@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, nullable, readonly) UIImage *originImage;
 @property (assign, nonatomic, getter=isOriginDownloaded) BOOL originDownloaded;
 
-
 - (instancetype)initWithImagePath:(NSString *)imagePath
                         thumbnail:(nullable UIImage *)thumbnail NS_DESIGNATED_INITIALIZER;
 

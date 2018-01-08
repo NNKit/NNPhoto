@@ -103,7 +103,8 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
     const CGSize containerSize = CGSizeMake(self.bounds.size.width - kNNPhotoBrowserPadding, self.bounds.size.height);
     const CGSize targetSize = [NNPhotoModel adjustImageSize:imageSize toFittingTargetSize:containerSize];
     const CGRect targetFrame = CGRectMake((self.bounds.size.width - kNNPhotoBrowserPadding - targetSize.width) * .5f, (self.bounds.size.height - targetSize.height) * .5f, targetSize.width, targetSize.height);
-    const BOOL needUpdate = !CGRectEqualToRect(targetFrame, self.containerView.frame);
+    const BOOL needUpdate = !CGRectEqualToRect(targetFrame, self.containerView.frame)
+                            || !CGSizeEqualToSize(targetSize, self.scrollView.contentSize);
     if (!needUpdate) return;
 
     const CGFloat maxWidth = MAX(self.bounds.size.width - kNNPhotoBrowserPadding, targetSize.width);

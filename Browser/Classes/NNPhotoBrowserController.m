@@ -12,6 +12,7 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 #import "NNPhotoBrowserController.h"
 #import "NNPhotoBrowserTransition.h"
 #import "NNPhotoBrowserCell.h"
+#import "NNPhotoModel.h"
 
 #import <YYWebImage/YYWebImage.h>
 
@@ -80,14 +81,34 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     const NSInteger index = self.currentIndex;
-    size.width += kNNPhotoBrowserPadding;
+    const NSIndexPath *indexPath = [NSIndexPath indexPathForItem:MAX(index, 0) inSection:0];
+    const NSArray <NSIndexPath *> *indexPaths = [NSArray arrayWithObject:indexPath];
+    NNPhotoBrowserCell *browserCell = (NNPhotoBrowserCell *)[self.collectionView cellForItemAtIndexPath:indexPaths.firstObject];
+    const CGSize itemSize = CGSizeMake(size.width + kNNPhotoBrowserPadding, size.height);
+    UIView *snapshotView = [[UIImageView alloc] initWithImage:browserCell.imageView.image];
+    snapshotView.frame = CGRectMake(0, 0, browserCell.imageView.superview.bounds.size.width * browserCell.imageView.superview.transform.a, browserCell.imageView.superview.bounds.size.height * browserCell.imageView.superview.transform.d);
+    snapshotView.center = self.view.center;
+    [[UIApplication sharedApplication].keyWindow addSubview:snapshotView];
+    self.collectionView.hidden = YES;
+
+    NNPhotoModel *photo = [self.photos objectAtIndex:indexPath.item];
+    const CGSize  lastSize = [NNPhotoModel adjustImageSize:photo.size toFittingTargetSize:size];
+    const CGPoint lastCenter = CGPointMake((size.width - lastSize.width) * .5f, (size.height - lastSize.height) * .5f);
+    const CGRect  lastFrame = { lastCenter, lastSize };
+    
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        [self.collectionView setCollectionViewLayout:[NNPhotoBrowserController browserCollectionViewLayoutWithItemSize:size]];
-        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:MAX(index, 0) inSection:0];
-        if (!indexPath || indexPath.item >= self.photos.count) return;
-        [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
-        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-    } completion:nil];
+        
+        snapshotView.frame = lastFrame;
+        snapshotView.transform = CGAffineTransformIdentity;
+        [self.collectionView setCollectionViewLayout:[NNPhotoBrowserController browserCollectionViewLayoutWithItemSize:itemSize]];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        [UIView setAnimationsEnabled:NO];
+        [self.collectionView reloadItemsAtIndexPaths:[indexPaths copy]];
+        [self.collectionView scrollToItemAtIndexPath:indexPaths.firstObject atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        [UIView setAnimationsEnabled:YES];
+        [snapshotView removeFromSuperview];
+        self.collectionView.hidden = NO;
+    }];
 }
 
 #pragma mark - Public
