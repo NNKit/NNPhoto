@@ -8,6 +8,7 @@
 //  @abstract   <#class description#>
 
 #import "NNPhotoBrowserCell.h"
+#import "NNPhotoLoadingView.h"
 #import "NNPhotoModel.h"
 #import <YYWebImage/YYWebImage.h>
 
@@ -41,6 +42,7 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *containerView;
 @property (nonatomic, strong) YYAnimatedImageView *imageView;
+@property (strong, nonatomic) NNPhotoLoadingView *loadingView;
 @end
 
 @implementation NNPhotoBrowserCell
@@ -62,6 +64,7 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
     [super prepareForReuse];
     [self.imageView yy_cancelCurrentImageRequest];
     [self.scrollView setZoomScale:1.f animated:NO];
+    [self.loadingView removeAllAnimations];
 }
 
 #pragma mark - Private
@@ -69,7 +72,9 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
 - (void)setupUI {
     
     self.backgroundColor = self.contentView.backgroundColor = [UIColor blackColor];
+    self.loadingView = [[NNPhotoLoadingView alloc] initWithFrame:self.bounds];
     
+    [self.imageView addSubview:self.loadingView];
     [self.containerView addSubview:self.imageView];
     [self.scrollView addSubview:self.containerView];
     [self.contentView addSubview:self.scrollView];
@@ -115,9 +120,12 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
     self.scrollView.alwaysBounceVertical = self.containerView.bounds.size.height > self.bounds.size.height;
     self.scrollView.maximumZoomScale = MAX(kNNPhotoBrowserMaxZoomScale, MAX((maxWidth / targetSize.width), (maxHeight / targetSize.height)));
 
-    if (animated) [UIView beginAnimations:@"layoutSubviews" context:nil];
+    if (animated) {
+        [UIView beginAnimations:@"layoutSubviews" context:nil];
+        [UIView setAnimationDelegate:self];
+    }
     self.containerView.frame = targetFrame;
-    self.imageView.frame = self.containerView.bounds;
+    self.imageView.frame = self.loadingView.frame = self.containerView.bounds;
     if (animated) [UIView commitAnimations];
 }
 
@@ -162,7 +170,10 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
     [self layoutSubviewsAdaptToImageSize:item.size];
     [self.imageView nn_setImageWithPath:imagePath
                             placeholder:item.thumbnail
-                               progress:nil
+                               progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                   __strong typeof(wSelf) self = wSelf;
+                                   self.loadingView.progress = ((CGFloat)receivedSize / (CGFloat)expectedSize);
+                               }
                              completion:^(UIImage * _Nullable image, NSURL * _Nonnull url, YYWebImageFromType from, YYWebImageStage stage, NSError * _Nullable error) {
                                  __strong typeof(wSelf) self = wSelf;
                                  BOOL animated = NO;
@@ -172,6 +183,14 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
                                      self.imageView.image = image;
                                  }
                                  [self layoutSubviewsAdaptToImageSize:wItem.size animated:animated];
+//                                 if (from == YYWebImageFromRemote) {
+//                                     [self.loadingView revealAnimationWithCompletionHandler:^{
+//                                         __strong typeof(wSelf) self = wSelf;
+//                                         [self layoutSubviewsAdaptToImageSize:wItem.size animated:animated];
+//                                     }];
+//                                 } else {
+//                                     [self layoutSubviewsAdaptToImageSize:wItem.size animated:animated];
+//                                 }
                              }];
 }
 
