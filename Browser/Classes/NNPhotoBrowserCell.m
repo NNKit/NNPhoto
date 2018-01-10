@@ -23,6 +23,10 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
                    progress:(nullable YYWebImageProgressBlock)progress
                  completion:(nullable YYWebImageCompletionBlock)completion {
     
+    if (!imagePath.length) {
+        self.image = placeholder;
+        return;
+    }
     if (![imagePath hasPrefix:@"http"]) {
         // 处理本地图片
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -33,7 +37,7 @@ static const CGFloat kNNPhotoBrowserMaxZoomScale = 5.f;
         });
         return;
     }
-    [self yy_setImageWithURL:[NSURL URLWithString:imagePath] placeholder:placeholder options:YYWebImageOptionSetImageWithFadeAnimation | YYWebImageOptionAvoidSetImage manager:nil progress:progress transform:nil completion:completion];
+    [self yy_setImageWithURL:[NSURL URLWithString:imagePath] placeholder:placeholder options:YYWebImageOptionAvoidSetImage manager:nil progress:progress transform:nil completion:completion];
 }
 @end
 

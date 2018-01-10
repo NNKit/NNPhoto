@@ -27,7 +27,8 @@
                         thumbnail:(UIImage *)thumbnail {
     
     if (self = [super init]) {
-        _thumbnail = thumbnail ? : [YYImage yy_imageWithColor:[UIColor blackColor] size:CGSizeMake([UIScreen mainScreen].bounds.size.width, 400)];
+        _thumbnail = thumbnail ? : [YYImage yy_imageWithColor:[UIColor colorWithRed:.92f green:.92f blue:.92f alpha:1.f]
+                                                         size:CGSizeMake([UIScreen mainScreen].bounds.size.width, 300)];
         _imagePath = [imagePath copy];
     }
     return self;

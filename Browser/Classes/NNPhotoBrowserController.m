@@ -12,6 +12,7 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 #import "NNPhotoBrowserController.h"
 #import "NNPhotoBrowserTransition.h"
 #import "NNPhotoBrowserCell.h"
+#import "NNPhotoMaskView.h"
 #import "NNPhotoModel.h"
 
 #import <YYWebImage/YYWebImage.h>
@@ -52,6 +53,7 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupUI];
+    if (self.firstBrowserIndex != NSNotFound) [self triggerCurrentIndexDidChanged];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -120,6 +122,21 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     [controller presentViewController:nav animated:YES completion:nil];
 }
 
+- (void)savePhotoImageToAblum:(NNPhotoModel *)photo completionHandler:(void(^)(NSURL * _Nullable assetURL, NSError * _Nullable error))handler {
+    UIImage *saveImage = photo.isOriginDownloaded ? photo.originImage : photo.image;
+    [saveImage yy_saveToAlbumWithCompletionBlock:handler];
+}
+
+- (void)revealPhotoOriginImage:(NNPhotoModel *)photo {
+    
+    if (!photo.originImagePath.length) return;
+    NSInteger index = [self.photos indexOfObject:photo];
+    if (index == NSNotFound) return;
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
+    NNPhotoBrowserCell *browserCell = (NNPhotoBrowserCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
+    if (browserCell) [browserCell configCellWithItem:photo displayOriginal:YES];
+}
+
 #pragma mark - Private
 
 - (void)setupUI {
@@ -151,8 +168,30 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     }
     
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[collectionView]|" options:NSLayoutFormatAlignAllTop metrics:nil views:@{@"collectionView" : self.collectionView}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[collectionView]-margin-|" options:NSLayoutFormatAlignAllLeft metrics:@{@"margin" : @(-kNNPhotoBrowserPadding)} views:@{@"collectionView" : self.collectionView}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[v]|" options:NSLayoutFormatAlignAllTop metrics:nil views:@{@"v" : self.collectionView}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[v]-margin-|" options:NSLayoutFormatAlignAllLeft metrics:@{@"margin" : @(-kNNPhotoBrowserPadding)} views:@{@"v" : self.collectionView}]];
+    
+    self.maskView = [[NNPhotoMaskView alloc] initWithFrame:self.view.bounds];
+    __weak typeof(self) wSelf = self;
+    self.maskView.handler = ^(NNPhotoMaskViewHandlerMode mode) {
+        __strong typeof(wSelf) self = wSelf;
+        NNPhotoModel *photo = [self.photos objectAtIndex:self.currentIndex];
+        switch (mode) {
+            case NNPhotoMaskViewHandlerModeSaveAlbum:
+            {
+                [self savePhotoImageToAblum:photo completionHandler:^(NSURL * _Nullable assetURL, NSError * _Nullable error) {
+                    __strong typeof(wSelf) self = wSelf;
+                    [self showAlertWithMessage:error ? error.localizedDescription : @"图片已保存到相册"];
+                }];
+            }
+                break;
+            case NNPhotoMaskViewHandlerModeDownloadOrigin:
+            {
+                [self revealPhotoOriginImage:photo];
+            }
+                break;
+        }
+    };
 }
 
 - (void)viewControllerBack {
@@ -161,14 +200,44 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
     if (self.navigationController) [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)triggerCurrentIndexWillChanged {
+    if (self.maskView && [self.maskView respondsToSelector:@selector(browser:willDisplayPhoto:)]) {
+        [self.maskView browser:self willDisplayPhoto:[self.photos objectAtIndex:self.currentIndex]];
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(browser:willDisplayPhoto:)]) {
+        [self.delegate browser:self willDisplayPhoto:[self.photos objectAtIndex:self.currentIndex]];
+    }
+}
+
+- (void)triggerCurrentIndexDidChanged {
+    if (self.maskView && [self.maskView respondsToSelector:@selector(browser:didDisplayPhoto:)]) {
+        [self.maskView browser:self didDisplayPhoto:[self.photos objectAtIndex:self.currentIndex]];
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(browser:didDisplayPhoto:)]) {
+        [self.delegate browser:self didDisplayPhoto:[self.photos objectAtIndex:self.currentIndex]];
+    }
+}
+
+- (void)showAlertWithMessage:(NSString *)message {
+    
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleCancel handler:nil];
+    [alertVC addAction:cancelAction];
+    [self showDetailViewController:alertVC sender:self];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     self.currentIndex = ceil(scrollView.contentOffset.x / scrollView.frame.size.width);
+    if (self.maskView && [self.maskView respondsToSelector:@selector(browser:willDisplayPhoto:)]) {
+        [self.maskView browser:self willDisplayPhoto:[self.photos objectAtIndex:self.currentIndex]];
+    }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
     self.currentIndex = ceil(scrollView.contentOffset.x / scrollView.frame.size.width);
+    [self triggerCurrentIndexDidChanged];
 }
 
 #pragma mark - UIViewControllerTransitioningDelegate
@@ -217,8 +286,20 @@ CGFloat kNNPhotoBrowserPadding = 16.f;
 
 - (void)setCurrentIndex:(NSUInteger)currentIndex {
 
-    _currentIndex = MAX(0, currentIndex);
+    _currentIndex = MIN(MAX(0, currentIndex), (self.photos.count - 1));
     if (self.firstBrowserIndex == NSNotFound) self.firstBrowserIndex = MAX(0, currentIndex);
+}
+
+- (void)setMaskView:(__kindof NNPhotoMaskView<NNPhotoBrowserControllerDelegate> *)maskView {
+    if (_maskView) {
+        // remove from super view if maskView exists
+        _maskView.handler = nil;
+        [_maskView removeFromSuperview];
+    }
+    maskView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_maskView = maskView];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[v]|" options:NSLayoutFormatAlignAllTop metrics:nil views:@{@"v" : _maskView}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[v]|" options:NSLayoutFormatAlignAllLeft metrics:nil views:@{@"v" : _maskView}]];
 }
 
 #pragma mark - Class

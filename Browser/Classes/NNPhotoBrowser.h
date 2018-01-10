@@ -12,9 +12,11 @@
 
 #if __has_include(<NNPhoto/NNPhotoBrowser.h>)
     #import <NNPhoto/NNPhotoModel.h>
+    #import <NNPhoto/NNPhotoMaskView.h>
     #import <NNPhoto/NNPhotoBrowserController.h>
 #else
     #import "NNPhotoModel.h"
+    #import "NNPhotoMaskView.h"
     #import "NNPhotoBrowserController.h"
 #endif
 

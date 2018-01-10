@@ -9,6 +9,7 @@
 #import "NNPhotoBrowserTransition.h"
 #import "NNPhotoBrowserController.h"
 #import "NNPhotoBrowserCell.h"
+#import "NNPhotoMaskView.h"
 #import "NNPhotoModel.h"
 
 #import <YYWebImage/YYWebImage.h>
@@ -64,7 +65,8 @@
     //设置第二个控制器的位置、透明度
     toVC.view.frame = [transitionContext finalFrameForViewController:toVC];
     toVC.view.alpha = 0;
-    browserVC.collectionView.hidden = YES;
+//    browserVC.maskView.frame = containerView.bounds;
+    browserVC.collectionView.hidden = browserVC.maskView.hidden = YES;
     
     //把动画前后的两个ViewController加到容器中,顺序很重要,snapShotView在上方
     [containerView addSubview:toVC.view];
@@ -101,12 +103,12 @@
     NNPhotoBrowserCell *visiableCell = (NNPhotoBrowserCell *)[toVC.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:toVC.currentIndex inSection:0]];
     BOOL animated = (!CGSizeEqualToSize(snapshotView.bounds.size, visiableCell.imageView.bounds.size));
     // 检查当前显示cell图片大小是否已经改变, 如果改变重新适应
-    [UIView animateWithDuration:animated ? .15f : CGFLOAT_MIN animations:^{
+    [UIView animateWithDuration:animated ? .2f : CGFLOAT_MIN animations:^{
         snapshotView.frame = CGRectMake(0, 0, visiableCell.imageView.bounds.size.width, visiableCell.imageView.bounds.size.height);
         snapshotView.center = containerView.center;
     } completion:^(BOOL finished) {
         toVC.sourceView.hidden = NO;
-        toVC.collectionView.hidden = NO;
+        toVC.collectionView.hidden = toVC.maskView.hidden = NO;
         [snapshotView removeFromSuperview];
         [transitionContext completeTransition:YES];
     }];
@@ -139,7 +141,7 @@
         snapshotView.frame = [containerView convertRect:browserCell.imageView.frame fromView:browserCell.imageView.superview ? : fromVC.view];
         
         /** 隐藏 返回的view */
-        browserVC.sourceView.hidden = YES;
+
         browserCell.hidden = YES;
 
         //设置第二个控制器的位置、透明度

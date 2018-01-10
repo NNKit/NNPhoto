@@ -54,7 +54,7 @@
     self.circleLayer.lineWidth = 3.f;
     self.circleLayer.lineCap = kCALineCapRound;
     self.circleLayer.fillColor = [UIColor clearColor].CGColor;
-    self.circleLayer.strokeColor = [UIColor colorWithRed:.92f green:.92f blue:.92f alpha:1.f].CGColor;
+    self.circleLayer.strokeColor = [UIColor colorWithRed:.82f green:.82f blue:.82f alpha:1.f].CGColor;
     [self.layer addSublayer:self.circleLayer];
     
     self.progress = .0f;

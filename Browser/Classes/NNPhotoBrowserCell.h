@@ -21,9 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NNPhotoBrowserCell : UICollectionViewCell
 @property (nonatomic, strong, readonly) YYAnimatedImageView *imageView;
+/** handler triggered when user tap or longPress imageView */
 @property (copy, nonatomic, nullable)   void(^handler)(NNPhotoBrowserCell *cell, NNPhotoBrowserCellHandlerMode mode);
+
 - (void)configCellWithItem:(NNPhotoModel *)item;
 - (void)configCellWithItem:(NNPhotoModel *)item displayOriginal:(BOOL)displayOriginal;
+
 @end
 
 NS_ASSUME_NONNULL_END
