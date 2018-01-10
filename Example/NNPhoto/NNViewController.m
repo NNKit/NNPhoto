@@ -36,6 +36,8 @@
                         @"http://c.hiphotos.baidu.com/image/pic/item/adaf2edda3cc7cd91f52dc3d3301213fb90e91d3.jpg",
                         @"http://e.hiphotos.baidu.com/image/pic/item/54fbb2fb43166d22db56ba704c2309f79052d235.jpg"
                         ];
+    
+    
 }
 
 #pragma mark - Private
@@ -67,7 +69,11 @@
 
     NSMutableArray<NNPhotoModel *> *photos = [NSMutableArray array];
     [self.imageURLs enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NNPhotoModel *photo = [[NNPhotoModel alloc] initWithImagePath:obj thumbnail:[UIImage imageNamed:[NSString stringWithFormat:@"%d",(int)(idx + 1)]]];
+        
+        UIImage *thumb = idx % 2 ? [UIImage imageNamed:[NSString stringWithFormat:@"%d",(int)(idx + 1)]] : nil;
+        NNPhotoModel *photo = [[NNPhotoModel alloc] initWithImagePath:obj
+                                                            thumbnail:thumb];
+        if (idx == 5) photo.originImagePath = @"http://h.hiphotos.baidu.com/image/pic/item/dbb44aed2e738bd4a4577722ab8b87d6277ff9ab.jpg";
         [photos addObject:photo];
     }];
     NNPhotoBrowserController *browserC = [[NNPhotoBrowserController alloc] initWithPhotos:photos];
