@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '8.0'
   s.subspec 'Browser' do |ss|
     ss.source_files = 'Browser/Classes/**/*'
-    ss.public_header_files = 'Browser/Classes/NNPhotoBrowser.h','Browser/Classes/NNPhotoModel.h','Browser/Classes/NNPhotoBrowserController.h'
+    ss.public_header_files = 'Browser/Classes/NNPhotoBrowser.h','Browser/Classes/NNPhotoMaskView.h','Browser/Classes/NNPhotoModel.h','Browser/Classes/NNPhotoBrowserController.h'
     ss.dependency 'YYWebImage'
   end
 end
